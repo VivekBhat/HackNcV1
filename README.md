@@ -1,24 +1,12 @@
-# README
+# HackNC 2016 Project: <Punny name here>
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+###Project Collaborators
 
-Things you may want to cover:
+ * [@VivekBhat](https://github.com/VivekBhat)
+ * [@K-lum](https://github.com/K-lum)
+ * [@benknoble](https://github.com/benknoble)
+ * [@alex-wyc](https://github.com/alex-wyc)
+ 
+###Project Description
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+A simple web application to manage meeting friends at a convenient location.
