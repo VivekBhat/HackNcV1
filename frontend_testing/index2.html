@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>Directions Widget</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.18/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.18/esri/css/esri.css">
+    <style>
+      html, body, #map {
+        height:100%;
+        width:100%;
+        margin:0;
+        padding:0;
+      }
+      body {
+        background-color:#FFF;
+        overflow:hidden;
+        font-family:"Trebuchet MS";
+      }
+    </style>
+
+    <script src="https://js.arcgis.com/3.18/"></script>
+    <script>
+      require([
+        "esri/urlUtils", "esri/map", "esri/dijit/Directions",
+        "dojo/parser",
+        "dijit/layout/BorderContainer", "dijit/layout/ContentPane",
+        "dojo/domReady!",
+        "esri/layers/FeatureLayer",
+        "esri/dijit/PopupTemplate",
+        "esri/request",
+        "esri/geometry/Point",
+        "esri/graphic",
+        "dojo/on",
+        "dojo/_base/array"
+      ], function(
+        urlUtils, Map, Directions,
+        parser,
+        FeatureLayer,
+        PopupTemplate,
+        esriRequest,
+        Point,
+        Graphic,
+        on,
+        array
+      ) {
+        parser.parse();
+        //all requests to route.arcgis.com will proxy to the proxyUrl defined in this object.
+        urlUtils.addProxyRule({
+          urlPrefix: "route.arcgis.com",
+          proxyUrl: "/sproxy/"
+        });
+        urlUtils.addProxyRule({
+          urlPrefix: "traffic.arcgis.com",
+          proxyUrl: "/sproxy/"
+        });
+        
+var featureCollection = {
+  "layerDefinition": null,
+  "featureSet": {
+  'features': [{'geometry': {'type': 'Point', 'coordinates': [-79.0512998, 35.9068799]}, 'type': 'Feature', 'properties': {'rating': 3.6, 'name': 'Chick-fil-A', 'reference': 'CmRRAAAAf4qg7pALAoLNn-tf926ceN995-Gl0WZcnrAPa4mCJH6p7WPe1MWifpT3yaYAMUO3NWIZf_3iVDCwgCeloOZh4n6Rx3w32kbE9U37I00p0gpAFjmE7bAVufXrh_kYHx78EhAtFUgVu7t2yH0r0d4-0hPfGhSIw3W0wAjO9bykNB0yg_YCAGqMHA', 'price_level': 1, 'geometry': {'location': {'lat': 35.9068799, 'lng': -79.0512998}, 'viewport': {'northeast': {'lat': 35.90722670000001, 'lng': -79.0508146}, 'southwest': {'lat': 35.9067643, 'lng': -79.0527554}}}, 'place_id': 'ChIJVVVVuYPCrIkRUrxy_oV9PjU', 'vicinity': '1 Medical Dr, Beach Cafe, Brinkhouse-Bullitt, Chapel Hill', 'photos': [{'photo_reference': 'CoQBdwAAAD8tzuh7doKAYY_a6v84krrnF7tbnhUV4VmMng916hYE5Wg7_9PCoVD17b61lRCQOrcCslGHo7tKVr1V62oKC_7avGQz6N-rfZrMH3_aYGgW3dW45qcZoboOEnJLfvth3OaEcglFLI3iQVL6NZoMgJzhlzGFZRaISAvzPyt4aqncEhAMbKLrSWfOrYwnwjY4bl6CGhTRHvC5Bm4wJoYDNHNJlKagGFlnLg', 'width': 500, 'html_attributions': ['<a href="https://maps.google.com/maps/contrib/101506490366503009092/photos">Chick-fil-A</a>'], 'height': 500}], 'scope': 'GOOGLE', 'id': 'ddcadca2eabd37bfc68d59c3f221b6af81b8d4d5', 'types': ['restaurant', 'food', 'point_of_interest', 'establishment'], 'icon': 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png'}}],
+    "geometryType": "esriGeometryPoint"
+  }};
+  
+  featureCollection.layerDefinition = {
+          "geometryType": "esriGeometryPoint",
+          "objectIdField": "ObjectID",
+          "drawingInfo": {
+            "renderer": {
+              "type": "simple",
+              "symbol": {
+                "type": "esriPMS",
+                "url": "https://cdn4.iconfinder.com/data/icons/e-commerce-5/512/Location_Detailed-3-128.png",
+                "contentType": "image/png",
+                "width": 25,
+                "height": 30
+              }
+            }
+          },
+          "fields": [{
+            "name": "ObjectID",
+            "alias": "ObjectID",
+            "type": "esriFieldTypeOID"
+          }, {
+            "name": "description",
+            "alias": "Description",
+            "type": "esriFieldTypeString"
+          }, {
+            "name": "title",
+            "alias": "Title",
+            "type": "esriFieldTypeString"
+          }]
+        };
+        
+        featureLayer = new FeatureLayer(featureCollection, {
+          id: 'poiLayer',
+          infoTemplate: popupTemplate
+        });
+        
+        var popupTemplate = new PopupTemplate({
+          title: "{title}",
+          description: "{description}"
+        });
+        
+        featureLayer.on("click", function(evt) {
+          map.infoWindow.setFeatures([evt.graphic]);
+        });
+
+        var myLoc = [-79.0509897214, 35.9058516246];
+        var map = new Map("map", {
+          basemap: "streets",
+          center: myLoc,
+          zoom: 4
+        });
+        
+        map.on("mouse-drag", function(evt) {
+          if (map.infoWindow.isShowing) {
+            var loc = map.infoWindow.getSelectedFeature().geometry;
+            if (!map.extent.contains(loc)) {
+              map.infoWindow.hide();
+            }
+          }
+        });
+        
+        var featureLayer;
+
+        //default will point to ArcGIS world routing service
+        var directions = new Directions({
+          map: map
+          // --------------------------------------------------------------------
+          // New constuctor option and property showSaveButton added at version
+          // 3.17 to allow saving route. For more information see the API Reference.
+          // https://developers.arcgis.com/javascript/3/jsapi/directions-amd.html#showsavebutton
+          //
+          // Uncomment the line below to add the save button to the Directions widget
+          // --------------------------------------------------------------------
+          // , showSaveButton: true
+        },"dir");
+        directions.startup();
+      });
+    </script>
+  </head>
+  <body class="claro">
+    <div data-dojo-type="dijit/layout/BorderContainer"
+         data-dojo-props="design:'headline', gutters:false"
+         style="width:100%;height:100%;">
+      <div data-dojo-type="dijit/layout/ContentPane"
+           data-dojo-props="region:'right'"
+           style="width:250px;">
+
+        <div id="dir"></div>
+      </div>
+      <div id="map"
+           data-dojo-type="dijit/layout/ContentPane"
+           data-dojo-props="region:'center'">
+      </div>
+    </div>
+  </body>
+</html>

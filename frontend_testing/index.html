@@ -1,0 +1,114 @@
+<html>
+
+<head>
+  <meta charset=utf-8 />
+  <title>Esri Leaflet Quickstart</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- Load Leaflet from CDN-->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0/dist/leaflet.css" />
+<link rel="stylesheet" href="https://js.arcgis.com/3.18/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.18/esri/css/esri.css">
+  <script src="https://unpkg.com/leaflet@1.0.0/dist/leaflet-src.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://unpkg.com/esri-leaflet@2.0.4"></script>
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+  </style>
+</head>
+
+<body>
+<!--  The following is the div that is acting as a container to hold the map-->
+<div data-dojo-type="dijit/layout/ContentPane"
+           data-dojo-props="region:'right'"
+           style="width:250px;">
+        
+        <div id="dir"></div>
+      </div>
+  <div id="map"></div>
+
+  <script>
+//Check out more Sample code and API reference at http://esri.github.io/esri-leaflet/examples/
+
+//Adds the map control and sets the center point to Durham and zoom scale to 10. For more info on the Leaflet map control check out: http://leafletjs.com/reference.html#map-class
+
+//The following line of code adds a number of data points coming from a Esri rest endpoint.  The data is farmers markets in Wake County and from: http://data.ral.opendata.arcgis.com/datasets/953ff61e36bd468d8ae267437377fa9c_0.\ . The points are added as a feature layer which means you can see the points on the map and create a popup showing the information about the points.  To learn more about feature layers: http://esri.github.io/esri-leaflet/api-reference/layers/feature-layer.html
+
+// {{{
+var data =
+{'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': [-79.0512998, 35.9068799]}, 'type': 'Feature', 'properties': {'rating': 3.6, 'name': 'Chick-fil-A', 'reference': 'CmRRAAAAf4qg7pALAoLNn-tf926ceN995-Gl0WZcnrAPa4mCJH6p7WPe1MWifpT3yaYAMUO3NWIZf_3iVDCwgCeloOZh4n6Rx3w32kbE9U37I00p0gpAFjmE7bAVufXrh_kYHx78EhAtFUgVu7t2yH0r0d4-0hPfGhSIw3W0wAjO9bykNB0yg_YCAGqMHA', 'price_level': 1, 'geometry': {'location': {'lat': 35.9068799, 'lng': -79.0512998}, 'viewport': {'northeast': {'lat': 35.90722670000001, 'lng': -79.0508146}, 'southwest': {'lat': 35.9067643, 'lng': -79.0527554}}}, 'place_id': 'ChIJVVVVuYPCrIkRUrxy_oV9PjU', 'vicinity': '1 Medical Dr, Beach Cafe, Brinkhouse-Bullitt, Chapel Hill', 'photos': [{'photo_reference': 'CoQBdwAAAD8tzuh7doKAYY_a6v84krrnF7tbnhUV4VmMng916hYE5Wg7_9PCoVD17b61lRCQOrcCslGHo7tKVr1V62oKC_7avGQz6N-rfZrMH3_aYGgW3dW45qcZoboOEnJLfvth3OaEcglFLI3iQVL6NZoMgJzhlzGFZRaISAvzPyt4aqncEhAMbKLrSWfOrYwnwjY4bl6CGhTRHvC5Bm4wJoYDNHNJlKagGFlnLg', 'width': 500, 'html_attributions': ['<a href="https://maps.google.com/maps/contrib/101506490366503009092/photos">Chick-fil-A</a>'], 'height': 500}], 'scope': 'GOOGLE', 'id': 'ddcadca2eabd37bfc68d59c3f221b6af81b8d4d5', 'types': ['restaurant', 'food', 'point_of_interest', 'establishment'], 'icon': 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png'}}, {'geometry': {'type': 'Point', 'coordinates': [-79.045252, 35.90605]}, 'type': 'Feature', 'properties': {'name': 'Subway', 'reference': 'CmRSAAAA97Si6PAXkU4k9xAs5lVwzr_hV0TthWOPkCXYUC_giDBpkc4WIj0iof9ex0xcDfJUHcWWPxweh7kupvDRdBc-KjbdR29jCtm2yH-FmpZ38zI79KXx1vGgOduOuPs1IXGvEhAB-RCBZ7uMowWh5pBxMMSKGhTrjXDFYviendtUqej0d0o3o9tRuQ', 'price_level': 1, 'geometry': {'location': {'lat': 35.90605, 'lng': -79.045252}, 'viewport': {'northeast': {'lat': 35.90607275, 'lng': -79.04516650000001}, 'southwest': {'lat': 35.90599095, 'lng': -79.04528489999998}}}, 'opening_hours': {'weekday_text': [], 'open_now': false}, 'place_id': 'ChIJ3fmCXezCrIkR_4trpeVyKuc', 'vicinity': '104 Ridge Road, Chapel Hill', 'scope': 'GOOGLE', 'id': '4e912c2de2b437c851cfebbddd70b9ab86022644', 'types': ['meal_takeaway', 'restaurant', 'food', 'point_of_interest', 'establishment'], 'icon': 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png'}}, {'geometry': {'type': 'Point', 'coordinates': [-79.05437739999999, 35.9097573]}, 'type': 'Feature', 'properties': {'rating': 4, 'name': 'Crossroads Chapel Hill', 'reference': 'CmRRAAAAJ5YWTkkJEilfPBICcLOR38SaidUkXm__QA3ls8z14SuCiHxZbBqJb_6Vbqxk3sk8pKeolzQEuknGxwqDz_yeRnnz9uykXhbMMMH5RQhx4rf04i4VRSBRSqRGjjyUhJljEhAHdwXBrh6s4k7VassDk2pIGhQfRyXOvcjw2h1Pkyyu_aT47tt2xA', 'price_level': 3, 'geometry': {'location': {'lat': 35.9097573, 'lng': -79.05437739999999}, 'viewport': {'northeast': {'lat': 35.90986715, 'lng': -79.05402954999998}, 'southwest': {'lat': 35.90942775, 'lng': -79.05542095}}}, 'opening_hours': {'weekday_text': [], 'open_now': false}, 'place_id': 'ChIJK8e_aubCrIkRC8Qk_qBfiCQ', 'vicinity': '211 Pittsboro Street, Chapel Hill', 'photos': [{'photo_reference': 'CoQBdwAAAB7HuWOvtBPAw6wxTn32Wkxpb6F9_LcG1v8QVSDj_QByzPLZ6g-TvFrHUEqzU5W8bjx65ciy5P9O8cJxthB-nzR8cqqUDZ66PbO6lROpahJHBKkxFTNFQX54_YvRXgmW8HOhnuAP371t53-8y21uUbdBmhjtk_1XJ_AGe4zxoAheEhAwMj0TmsvWUmF9dBgTjoyoGhQwY3R2Cw5GJBoros0sqlgy1wQB4A', 'width': 805, 'html_attributions': ['<a href="https://maps.google.com/maps/contrib/108631080474244015122/photos">Crossroads Chapel Hill</a>'], 'height': 500}], 'scope': 'GOOGLE', 'id': '9cf615c9ecb0e017e6d1872fea15b73ba9982362', 'types': ['bar', 'restaurant', 'food', 'point_of_interest', 'establishment'], 'icon': 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png'}}, {'geometry': {'type': 'Point', 'coordinates': [-79.0487242, 35.9105075]}, 'type': 'Feature', 'properties': {'rating': 3.7, 'name': 'Lenoir Dining Hall', 'reference': 'CmRRAAAAYy1QTACfC70OsM3Jqw9_4B5DQEMYRWYwwFCP9s4Juxf1qQR5DgzrXdFIPRCno8MOJ9T7m0ZtsSvjquF4qtOezzzdLuWfPdTTo2htZgUKe4O4SMoTnzajbloQxEpq-0SbEhBmCja9c5DNt-OK7oTAzdf3GhS-54J3Rz_HyyzaJK7bisM5Enggcw', 'geometry': {'location': {'lat': 35.9105075, 'lng': -79.0487242}, 'viewport': {'northeast': {'lat': 35.91169475, 'lng': -79.04838190000001}, 'southwest': {'lat': 35.91011175, 'lng': -79.0488383}}}, 'opening_hours': {'weekday_text': [], 'open_now': false}, 'place_id': 'ChIJV6kEnunCrIkRO470mEblUQ4', 'vicinity': '36 Lenoir Drive, Chapel Hill', 'photos': [{'photo_reference': 'CoQBdwAAABAzlSMl0NKsdHOxcCTuPrnP9wUm0wTrkx4QAAvDaZru1Fj-4g0F6VSiuPp4dc_at_nQcTUz1U2vRz-G_s5Bi9L5uYcn6lfYv559-nXTnbNa7iTLtfgyLScdMIQcqyVjWsDanHo0pwotuTRxS7QiDamQRLRMuANgfzrHcmjmkyq0EhAgmNHSNlgzXWKnGkGgifSoGhSjbriW1Cz3R3M70x7LDycVPFjYBQ', 'width': 4304, 'html_attributions': ['<a href="https://maps.google.com/maps/contrib/105756946703234635408/photos">Lenoir Dining Hall</a>'], 'height': 2852}], 'scope': 'GOOGLE', 'id': '8ef7fb8ca2c2d57a02e1304d0563c145eda2d8f9', 'types': ['restaurant', 'food', 'point_of_interest', 'establishment'], 'icon': 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png'}}, {'geometry': {'type': 'Point', 'coordinates': [-79.048834, 35.910591]}, 'type': 'Feature', 'properties': {'name': 'Chick-fil-A', 'reference': 'CmRRAAAAx5DjgEQEutLrrzlTDI_B3e2USSfrvZAk81LWUyvVuFR__WMb9RL2GobsMNN5mXcAa8bfXH-QshVqh92DQ6S1M5ODEZym_cHXOTzglfjC_2-l_ItLLC3wzbzdvTnaJmmyEhCFJEzMcmhjk2I11WF4vSvNGhQs47FmeAuhk498IctZzFL53r6EZg', 'price_level': 1, 'geometry': {'location': {'lat': 35.910591, 'lng': -79.048834}}, 'opening_hours': {'weekday_text': [], 'open_now': false}, 'place_id': 'ChIJVVVVuYPCrIkRt7h3pbyyOUE', 'vicinity': '36 Lenior Hall, Chapel Hill', 'photos': [{'photo_reference': 'CoQBdwAAAAfgxKQ3SWA9yyr_ilJkW8xPn8qG15ad7hfMynduvuS53djmuOZ3f0GJb9BUZxAHF8Ud1e5VTgqOW1orwv5fJcV5lefbLphSvyM0GsS16OoLK9H5AxZRCMt9eCnPPHptgPGaoVKIa4RKQczmRFlRYTboDD2lvkgPWgl-jY-JAMs6EhAShKupRI8NYE5HX7-azQ8eGhRGJsoVqKGnM5uDQ2bhkjKhjcTByQ', 'width': 500, 'html_attributions': ['<a href="https://maps.google.com/maps/contrib/102684996794741636373/photos">Chick-fil-A</a>'], 'height': 500}], 'scope': 'GOOGLE', 'id': '3e0e2ef32c4adfd0de26064f89a3691c9675aab6', 'types': ['restaurant', 'food', 'point_of_interest', 'establishment'], 'icon': 'https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png'}}]}
+//}}} var my_loc = [-79.0509897214, 35.9058516246];
+var my_loc = {'lat': 35.9058516246, 'lng':-79.0509897214};
+
+var map = L.map('map').setView(my_loc, 16); //35.9886° N, 78.9072° W
+
+//Adds a basemap to the map.  To see all the available basemaps: http://esri.github.io/esri-leaflet/api-reference/layers/basemap-layer.html
+L.esri.basemapLayer('Topographic').addTo(map);
+
+var render_data = function(d, m) {
+    var pointicon = L.icon({
+        iconUrl: 'https://cdn4.iconfinder.com/data/icons/e-commerce-5/512/Location_Detailed-3-128.png',
+        iconSize: [25, 30]
+    });
+
+    L.geoJson(d, {
+        pointToLayer: function(feature, latlng) {
+            console.log(latlng);
+            var marker = L.marker(latlng, {icon: pointicon});
+            var tooltiptext = feature.properties.name + " (" +
+                feature.properties.rating + " stars)" + "<br>" +
+                feature.properties.vicinity + "<br>"
+            marker.bindPopup(tooltiptext);
+            return marker;
+        }
+    }).addTo(map);
+};
+
+render_data(data, my_loc);
+
+var route = new L.esri.Routing.Route().start(my_loc).end(data.features[0].geometry).addTo(map);
+
+//var directions = new Directions({
+//          canModifyStops: false,
+//          traffic: true,
+//          stops: [my_loc, data.features[0].geometry.coordinates],
+//          map: map
+//          // --------------------------------------------------------------------
+//          // New constuctor option and property showSaveButton added at version
+//          // 3.17 to allow saving route. For more information see the API Reference.
+//          // https://developers.arcgis.com/javascript/3/jsapi/directions-amd.html#showsavebutton
+//          //
+//          // Uncomment the line below to add the save button to the Directions widget
+//          // --------------------------------------------------------------------
+//          // , showSaveButton: true
+//        },"dir");
+//directions.startup();
+//})});
+// load GeoJSON from an external file.  
+//Replace URL below to point to your GeoJSON
+//$.getJSON("https://s3-us-west-2.amazonaws.com/s.cdpn.io/131702/north_carolina_bicycle_crash_data_heatmap__(1).geojson", function(data) {
+//  //Create bike icon to style points
+//    var bikeIcon = L.icon({
+//      //Replace URL on the next line to point to your icon
+//    iconUrl: 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/131702/bikeCrash.png',
+//    iconSize: [60,50]
+//  });
+//  // add GeoJSON layer to the map once the file is loaded
+//   L.geoJson(data,{
+// pointToLayer: function(feature,latlng){
+//   //Create Bike Icon Marker
+//  var marker = L.marker(latlng,{icon: bikeIcon});
+//    //To show the fields in your data, replace the field names in the {} to match your data
+//  marker.bindPopup(feature.properties.crash_date + '<br/>' + feature.properties.bike_sex + '<br/>' + feature.properties.crash_type);
+//  return marker;
+//}
+//     //add data layer containing bike crash data to the map
+//  }).addTo(map);
+//});
+
+  </script>
+</body>
+
+</html>
